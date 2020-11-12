@@ -1,104 +1,110 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[3]:
 
 
-import random
-
-
-def rounum(a,b):
-    '''生成a到b之间的随机数'''
-    num=random.randint(a,b)
-    return num
-
-
-def rouxiao():
-    '''随机小写字母'''
-    num=chr(rounum(97,122))
-    return num
-
-
-def ben1(n1):
-    '''输入位数，生成一个随机二级域名'''
-    n1=rounum(1,10)
-    ax=1
-    result=[]
-    with open('data.txt','r') as f:
-        for line in f:
-            list1=str(list(line.strip('\n').split(',')))
-            list1=list1.strip('[')
-            list1=list1.strip(']')
-            list1=list1.strip("'")
-            result.append(list1)
-    a1=0
-    while a1==0:
-        a=1
-        url1=''
-        while a<=n1:
-            b=rounum(0,1)
-            if b==0:
-                url1+=str(rounum(0,9))
-            else:
-                url1+=rouxiao()
-            a+=1
-        if url1 in result:
-            a1=0
-            ax+=1
-        else :
-            a1=1
-            url2=url1+'\n'
-            with open('data.txt','a') as f:            
-                f.write(url2)
-                f.close()
-        if ax>=500:
-            a1=1
-    return(url1)
-
-
-# In[1]:
-
-
-import Scannermods
-import sys
-import time
 import pp
+import time
+import random
+import urllib.request
+import requests
+import re
 
-print('——————————————————————')
-print('RealmnameScanner v1.00')
-print('——————————————————————')
 
-list1 = list()##创建一个检索列表
+#函数区域
 
-print('输入主域名:')
-url1 = input()
+def text_create(name, msg):
+    '''创建文件'''
+    full_path =name + '.txt'
+    file = open(full_path, 'w')
+    file.write(msg)   
+    file.close()
+    
+    
+def hanshu1(x1):
+    '''生成一个随机数字和小写字母组成的字符串，x1为最大位数'''
+    x1=int(x1)
+    num1=random.randint(1,x1)#生成随机位数
+    a=1
+    str1=''
+    while a<=num1:
+        num2=random.randint(0,1)#判断是数字还是小写字母，0是数字，一是小写字母
+        if num2==0:
+            str2=str(random.randint(0,9))
+        if num2==1:
+            str2=chr(random.randint(97,122))
+        str1+=str2
+        a+=1
+    return(str1)
 
-print('')
+def hanshu2(url2):
+    with open('url1.txt','r',encoding='utf-8') as f:
+        url1 = str(f.read())
+        f.close()
+    url='http://'+url2+'.'+url1+'/'
+    opener = urllib.request.build_opener()
+    try :
+        opener.open(url)
+        a1=1
+    except urllib.error.HTTPError:
+        a1=0
+    except urllib.error.URLError:
+        a1=0
+    if a1==1:
+        r = str(requests.get(url))
+        a = re.findall(r"\d+\.?\d*",r)
+        a = int("," . join(a))
+        ztm1=str(a)
+        output1=url + ' '+'状态码:' + ztm1
+        return(output1)
 
-file1 = open("data.txt", 'w').close()
+print('输入扫描域名:')
+url1=input()        
+text_create('url1', url1)
 
-print('调用线程数：')
-usecpu=input()
+#创建检查列表
+list1 = list() 
 
-print('')
-print('开始扫描....')
-print('')
-
-job_server = pp.Server(int(usecpu))
+##创建pp server进程
+job_server = pp.Server() 
 start_time =time.time()
 
-x=0
-a=1
-while x==0:
-    ap = 36
-    inputs=(a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a)
-    results = [(input,job_server.submit(ben1,(input,),(rounum,rouxiao,),("random",))) for input in inputs ]
+##以pp模式运行函数hanshu1()多线程32次
+print('输入扫描强度:')
+a=input()
+x11=0
 
+#循环主体
+while x11==0:
+    inputs=(a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a)
+    results = [(input,job_server.submit(hanshu1,(input,),(random.randint,),("random",))) for input in inputs ]
+
+    #结果去重并转换为元组
+    list2=list()
     for input, result in results:
-        url2=str(result())
-        url='http://'+url2+'.'+url1+'/'
-        if Scannermods.mod1(url)==1:
-            ztm1=str(Scannermods.mod2(url))
-            output1=url + ' '+'状态码:' + ztm1
-            print(output1)
+        mo1=str(result())
+        if mo1 in list1:
+            mo1=str(result())
+        else:
+            list2.append(mo1)
+            list1.append(mo1)
+
+    list2=list(set(list2))
+    list2=tuple(list2)
+
+    results2 = [(m2,job_server.submit(hanshu2,(m2,),(urllib.request.build_opener,),("urllib.request","requests","re",))) for m2 in list2 ]
+    for m2, result2 in results2:
+        mo2=str(result2())
+        if mo2=='None':
+            mo2='None'
+        else:
+            print(mo2)
+    
+
+
+# In[ ]:
+
+
+
 
