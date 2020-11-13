@@ -4,76 +4,108 @@
 # In[ ]:
 
 
+import pp
+import time
 import random
+import urllib.request
+import requests
+import re
 
 
-def rounum(a,b):
-    '''生成a到b之间的随机数'''
-    num=random.randint(a,b)
-    return num
+#函数区域
 
+def text_create(name, msg):
+    '''创建文件'''
+    full_path =name + '.txt'
+    file = open(full_path, 'w')
+    file.write(msg)   
+    file.close()
 
-def rouxiao():
-    '''随机小写字母'''
-    num=chr(rounum(97,122))
-    return num
+def hanshu2(url2):
+    
+    headers = ('User-Agent', '1551wtmsb')
+    # 或者随便起个名字，如 headers = {'User-Agent': 'Firefox'}
+    
+    with open('url1.txt','r',encoding='utf-8') as f:
+        url1 = str(f.read())
+        f.close()
+    url='http://'+url2+'.'+url1+'/'
+    
+    opener = urllib.request.build_opener()
+    opener.addheaders = [headers]
+    try :
+        opener.open(url)
+        a1=1
+    except urllib.error.HTTPError:
+        a1=0
+    except urllib.error.URLError:
+        a1=0
+    if a1==1:
+        r=requests.get(url,timeout=10)
+        r.addheaders = [headers]
+        r = str(requests.get(url,timeout=10))
+        a = re.findall(r"\d+\.?\d*",r)
+        a = int("," . join(a))
+        ztm1=str(a)
+        output1=url + ' '+'状态码:' + ztm1
+        return(output1)
 
+print('————————————')
+print('RealmnameScanner v1.10')
+print('————————————')
 
-# In[ ]:
-
-
-import Scannermods
-
-print('——————————————————————')
-print('RealmnameScanner v1.00')
-print('——————————————————————')
-
-list1 = list()##创建一个检索列表
-
-print('输入主域名:')
-url1 = input()
-
-a=0
-n=1
-n2=1 ##n2为二级域名位数
-
-a=1
-a1=1
-n1=1
-a2=36
-
-print('开始扫描....')
+print('')    
+print('输入扫描域名:',end='')
+url1=input()        
+text_create('url1', url1)
 print('')
 
-while a>=0:
-    while a1<=a2:
-        b1=1
-        url2=''
-        while b1<=n2:
-            if rounum(0,1)==0:
-                url2+=str(rounum(0,9))
-            else:
-                url2+=rouxiao()
-            b1+=1
-        if (url2 in list1):
-            a+=0
-        else:
-            list1.append(url2)
-            url='http://'+url2+'.'+url1+'/'
-            
-            if Scannermods.mod1(url)==1:
-                ztm1=str(Scannermods.mod2(url))
-                output1=str(a)+' '+ url + ' '+'状态码:' + ztm1
-                print(output1)
-            ##
-            
-            a1+=1
-            a+=1
-    a1=1
-    a2=a2*36
-    n2+=1
+#创建检查列表
+list1 = list() 
 
+##创建pp server进程和多线程
+print('正在创建线程...')
+job_server = pp.Server() 
+start_time =time.time()
+print('线程创建完成')
+print('')
+
+##以pp模式运行函数hanshu1()多线程32次
+print('输入扫描强度:',end='')
+nx=int(input())
+n=1
+x11=0
+
+#循环主体
+while x11==0:
     
+    print('')
+    word2='正在读取'+str(n)+'位库......'
+    print(word2)
+    
+    name='data'+str(n)+'.txt'
+    with open(name, encoding="utf-8") as f:
+        str1 = f.read()
+        url1=eval(str1)
+    list2=tuple(url1)
+    print("读取完毕，开始继续扫描：")
+
+    results2 = [(m2,job_server.submit(hanshu2,(m2,),(urllib.request.build_opener,),("urllib.request","requests","re",))) for m2 in list2 ]
+    for m2, result2 in results2:
+        mo2=str(result2())
+        if mo2=='None':
+            mo2='None'
+        else:
+            print(mo2)
+            
+    n=int(n)
+    if n<nx:
+        n+=1
+    else:
+        x11=1
+    
+print('')
+print('扫描结束')
 input()
 
 
