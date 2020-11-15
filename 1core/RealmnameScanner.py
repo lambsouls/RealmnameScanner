@@ -39,7 +39,7 @@ def hanshu1(url1,url2):
     return(a1)
 
 print('—————————————')
-print('RealmnameScanner for 1 core')
+print('RealmnameScanner for 1 core 1.3.0')
 print('—————————————')
 
 print('')    
@@ -47,18 +47,18 @@ print('输入扫描域名:',end='')
 url1=input()
 print('')
 
-print('')
 print('输入扫描强度：',end='')
 x=int(input())
-
-ax=1
-
 print('')
 
+ax=1
 x1=1
    
 while ax==1:
     
+    an=str(ax)
+    word1='开始扫描'+an+'位子域名：'
+    print(word1)
     for i in itertools.combinations_with_replacement('0123456789qwertyuiopasdfghjklzxcvbnm', x1):
         a=str(''.join(i))
         try:
@@ -71,6 +71,9 @@ while ax==1:
             wordx='http://'+a+'.'+url1+'/'+' '+'被可访问域名主动拒绝'
             print(wordx)
     
+    word2=an+'位子域名扫描结束'
+    print(word2)
+    print('')
     if x1==x:
         ax=0
     else:
