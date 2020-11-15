@@ -56,7 +56,7 @@ x1=1
    
 while ax==1:
     
-    an=str(ax)
+    an=str(x1)
     word1='开始扫描'+an+'位子域名：'
     print(word1)
     for i in itertools.combinations_with_replacement('0123456789qwertyuiopasdfghjklzxcvbnm', x1):
