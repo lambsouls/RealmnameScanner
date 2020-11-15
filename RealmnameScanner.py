@@ -56,7 +56,7 @@ def hanshu2(url2):
     return(output1)
 
 print('————————————')
-print('RealmnameScanner v1.30')
+print('RealmnameScanner v1.3.0')
 print('————————————')
 
 print('')    
